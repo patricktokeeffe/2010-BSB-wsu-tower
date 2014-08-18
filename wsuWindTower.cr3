@@ -495,7 +495,7 @@ BeginProg
   SerialOpen(Com3,9600,10,0,40)
   SerialOpen(Com4,9600,10,0,40)
   
-	Scan (100,mSec,3,0)   'start scans @ 10Hz, 3-scan buffer, loop forever
+	Scan (100,mSec,5,0)   'start scans @ 10Hz, 5-scan (1/2 sec) buffer, loop forever
 	  Call resetVars        'empty out data variables
 	  RealTime(rTime)       'retrieve time this scan
     If ( (rMinute=29 OR rMinute=59) AND rSecond=59 AND rMicroSec=900000 )  ' prior to each new half hour
