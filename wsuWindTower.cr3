@@ -473,7 +473,7 @@ Sub resetVars
   'negUy_3 = NAN
   'negUy_4 = NAN
 '  Move(sonic_1(1),4,NaN,1)    'IDK if Move() can be trusted to affect all four
-'  Move(sonic_2(1),4,NaN,1)    'modified program to use brute force
+'  Move(sonic_2(1),4,NaN,1)    'so modified program to use brute force
 '  Move(sonic_3(1),4,NaN,1)
 '  Move(sonic_4(1),4,NaN,1)
 '  Move(instWS(1),4,NaN,1)
@@ -482,7 +482,7 @@ Sub resetVars
 EndSub
 
 '''''' PROGRAM '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-PreserveVariables
+PreserveVariables         'tests suggest this instruction is a massive failure. can't hurt though
 BeginProg
   If (NOT initialized)    'if not initialized yet
     Call setDefaults        'place call to set vars to defaults
@@ -506,7 +506,6 @@ BeginProg
     'If ( panel_temp_C >= 30 )       ' if data logger temp exceeds 30 deg C / 85 deg F
       'SW12(2,-1)                        ' turn on fan: set SW12 power #2 high (-1)
     'EndIf
-    
     Battery(batt_V)                  ' measure input voltage
 
 		'Get serial data from ATI-Sx sonic
@@ -521,7 +520,6 @@ BeginProg
 		'				         01 most recent record, store NAN if no record
     '				         10 oldest record, do not store NAN if no record
 		'				         11 oldest record, store NAN if no record
-		
 		' SONIC COM PORT 1
  		SerialInRecord (Com1,son1_in_str,0,20,&H0D0A,bytes_back_1,00)  'get serial data
     If (com1_used)                                    'if sonic is attached
@@ -627,7 +625,9 @@ BeginProg
   	EndIf
   	'SerialFlush(Com4)
   	
-    CallTable(wsuWind_10hz)  'save 10Hz data to final storage table
+    CallTable(wsuWind_10hz)  'save 10Hz data to final storage table    
+	NextScan
+EndProg
     
 '		CallTable(windVec_5min)  'perform wind direction computations
 '		If( windVec_5min.Output(1,1) ) Then      'if record was output
@@ -692,6 +692,4 @@ BeginProg
 '		  'EndIf
 '		EndIf    
 '    CallTable(wsuWind_30min)
-    
-	NextScan
-EndProg
+
