@@ -467,14 +467,6 @@ Sub resetVars
   Uy_4 = NAN
   Uz_4 = NAN
   Ts_4 = NAN
-  instWS_1 = NAN
-  instWS_2 = NAN
-  instWS_3 = NAN
-  instWS_4 = NAN
-  instWD_1 = NAN
-  instWD_1 = NAN
-  instWD_3 = NAN
-  instWD_4 = NAN
   diag_4 = 0
   'negUy_1 = NAN
   'negUy_2 = NAN
@@ -551,7 +543,7 @@ BeginProg
   			EndIf
   		Next j	
   		'calc horizontal WD, correct for sonic orientation, mag declination & adjust 0-360
-   		instWD_1 = (ATN2(-1*Ux_1,-1*Uy_1)*DperR + azimuth_1 + declination + 360) MOD 360
+   		instWD_1 = (ATN2(-1*Ux_1,-1*Uy_1)*DperR + azimuth_1 + declination) MOD 360
 		  instWS_1 = SQR(Ux_1^2+Uy_1^2)                                     'calc WS
 		  'negUy_1 = -1*Uy_1                                                 'calc east component (-Uy)
   	EndIf
@@ -577,7 +569,7 @@ BeginProg
   			EndIf
   		Next j	
   		'calc horizontal WD, correct for sonic orientation, mag declination & adjust 0-360
-  		instWD_2 = (ATN2(-1*Ux_2,-1*Uy_2)*DperR + azimuth_2 + declination + 360 ) MOD 360
+  		instWD_2 = (ATN2(-1*Ux_2,-1*Uy_2)*DperR + azimuth_2 + declination) MOD 360
 		  instWS_2 = SQR(Ux_2^2+Uy_2^2)                                     'calc WS
 		  'negUy_2 = -1*Uy_2                                                 'calc east component (-Uy)
     EndIf	
@@ -603,7 +595,7 @@ BeginProg
   			EndIf
   		Next j
   		'calc horizontal WD, correct for sonic orientation, mag declination & adjust 0-360
-  		instWD_3 = (ATN2(-1*Ux_3,-1*Uy_3)*DperR + azimuth_3 + declination + 360 ) MOD 360
+  		instWD_3 = (ATN2(-1*Ux_3,-1*Uy_3)*DperR + azimuth_3 + declination) MOD 360
 		  instWS_3 = SQR(Ux_3^2+Uy_3^2)                                     'calc WS
 		  'negUy_3 = -1*Uy_3                                                 'calc east component (-Uy)
     EndIf
@@ -629,7 +621,7 @@ BeginProg
   			EndIf
   		Next j
   		'calc horizontal WD, correct for sonic orientation, mag declination & adjust 0-360
-  		instWD_4 = (ATN2(-1*Ux_4,-1*Uy_4)*DperR + azimuth_4 + declination + 360 ) MOD 360
+  		instWD_4 = (ATN2(-1*Ux_4,-1*Uy_4)*DperR + azimuth_4 + declination) MOD 360
 		  instWS_4 = SQR(Ux_4^2+Uy_4^2)                                     'calc WS
 		  'negUy_4 = -1*Uy_4                                                 'calc east component (-Uy)
   	EndIf
