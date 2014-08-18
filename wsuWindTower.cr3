@@ -21,7 +21,7 @@ Const DEF_com4_used = False
 Const DEF_azimuth_1 = 268
 Const DEF_azimuth_2 = 268
 Const DEF_azimuth_3 = 268
-Const DEF_azimuth_4 = 0           'COM4 not used
+Const DEF_azimuth_4 = 268         'COM4 not used, just in case
 Const DEF_declination = 13        'value for Big Southern Butte, ID early July 2010
 
 '''''' ATI sonic configuration '''''''''''''''''''''''''''''''''''''''''''''''''
@@ -421,13 +421,13 @@ DisplayMenu("WSU Wind Tower",-2)    'show menu upon startup; display system as s
     MenuItem("On COM3?",com3_used)
     MenuPick(Yes,No)
     MenuItem("On COM4?",com4_used)
-    MenuPick(No)
+    MenuPick(Yes,No)
   EndSubMenu
   SubMenu("Sonic orientation")
     MenuItem("Azimuth 1",azimuth_1)
     MenuItem("Azimuth 2",azimuth_2)
     MenuItem("Azimuth 3",azimuth_3)
-'    MenuItem("Azimuth 4",azimuth_4)
+    MenuItem("Azimuth 4",azimuth_4)
     MenuItem("Declination",declination)
   EndSubMenu
 EndMenu
@@ -493,7 +493,7 @@ BeginProg
   SerialOpen(Com1,9600,10,0,40)
   SerialOpen(Com2,9600,10,0,40)
   SerialOpen(Com3,9600,10,0,40)
-  'SerialOpen(Com4,9600,10,0,40)
+  SerialOpen(Com4,9600,10,0,40)
   
 	Scan (100,mSec,3,0)   'start scans @ 10Hz, 3-scan buffer, loop forever
 	  Call resetVars        'empty out data variables
@@ -602,7 +602,7 @@ BeginProg
     'SerialFlush(Com3)
 	  
 	  ' SONIC COM PORT 4
- 		'SerialInRecord (Com4,son4_in_str,0,20,&H0D0A,bytes_back_4,01)  'get serial data
+ 		SerialInRecord (Com4,son4_in_str,0,20,&H0D0A,bytes_back_4,01)  'get serial data
     If (com4_used)                                  'if sonic attached
   		MoveBytes (son4_in_parts(1),0,son4_in_str,0,5)    'parse individual values from data string
   		MoveBytes (son4_in_parts(2),0,son4_in_str,5,5)
