@@ -100,11 +100,12 @@ Alias rTime(8) = rWeekDay
 Alias rTime(9) = rDayOfYear
 
 ' COM 1 sonic input
-Public sonic_1(4)
+Public sonic_1(5) As Float
 Alias sonic_1(1) = Ux_1
 Alias sonic_1(2) = Uy_1
 Alias sonic_1(3) = Uz_1
 Alias sonic_1(4) = Ts_1
+Alias sonic_1(5) = diag_1
 Units sonic_1 = m/s
 Units Ts_1 = C
 Dim son1_in_str As String * 20
@@ -112,11 +113,12 @@ Dim son1_in_parts(4) As String * 5
 Dim bytes_back_1
 
 ' COM 2 sonic input
-Public sonic_2(4)
+Public sonic_2(5) As Float
 Alias sonic_2(1) = Ux_2
 Alias sonic_2(2) = Uy_2
 Alias sonic_2(3) = Uz_2
 Alias sonic_2(4) = Ts_2
+Alias sonic_2(5) = diag_2
 Units sonic_2 = m/s
 Units Ts_2 = C
 Dim son2_in_str As String * 20
@@ -124,11 +126,12 @@ Dim son2_in_parts(4) As String * 5
 Dim bytes_back_2
 
 ' COM 3 sonic input
-Public sonic_3(4)
+Public sonic_3(5) As Float
 Alias sonic_3(1) = Ux_3
 Alias sonic_3(2) = Uy_3
 Alias sonic_3(3) = Uz_3
 Alias sonic_3(4) = Ts_3
+Alias sonic_3(5) = diag_3
 Units sonic_3 = m/s
 Units Ts_3 = C
 Dim son3_in_str As String * 20
@@ -136,11 +139,12 @@ Dim son3_in_parts(4) As String * 5
 Dim bytes_back_3
 
 ' COM 4 sonic input
-Public sonic_4(4)
+Public sonic_4(5) As Float
 Alias sonic_4(1) = Ux_4
 Alias sonic_4(2) = Uy_4
 Alias sonic_4(3) = Uz_4
 Alias sonic_4(4) = Ts_4
+Alias sonic_4(5) = diag_4
 Units sonic_4 = m/s
 Units Ts_4 = C
 Dim son4_in_str As String * 20
@@ -217,10 +221,10 @@ Alias avgWind(24) = WSstdev_3
 DataTable(wsuWind_10hz,save_data,-1)
 	DataInterval(0,0,mSec,100)  ' set data inteval same as scan interval
 	CardOut(0,-1)                ' store on card: ring fill, allocate all memory
-  Sample(4,sonic_1,IEEE4)
-  Sample(4,sonic_2,IEEE4)
-  Sample(4,sonic_3,IEEE4)
-  Sample(4,sonic_4,IEEE4)
+  Sample(5,sonic_1,FP2)
+  Sample(5,sonic_2,FP2)
+  Sample(5,sonic_3,FP2)
+  Sample(5,sonic_4,FP2)
 EndTable
 
 DataTable(wsuWind_5min,save_data,-1)
@@ -379,6 +383,7 @@ DisplayMenu("WSU Wind Tower",-2)    'show menu upon startup; display system as s
       DisplayValue("Ts",Public.Ts_1)
       DisplayValue("WS",Public.instWS_1)
       DisplayValue("WD",Public.instWD_1)
+      DisplayValue("diag",Public.diag_1)
     EndSubMenu
     SubMenu("COM2")
       DisplayValue("Ux",Public.Ux_2)
@@ -387,6 +392,7 @@ DisplayMenu("WSU Wind Tower",-2)    'show menu upon startup; display system as s
       DisplayValue("Ts",Public.Ts_2)
       DisplayValue("WS",Public.instWS_2)
       DisplayValue("WD",Public.instWD_2)
+      DisplayValue("diag",Public.diag_2)
     EndSubMenu
     SubMenu("COM3")
       DisplayValue("Ux",Public.Ux_3)
@@ -395,15 +401,17 @@ DisplayMenu("WSU Wind Tower",-2)    'show menu upon startup; display system as s
       DisplayValue("Ts",Public.Ts_3)   
       DisplayValue("WS",Public.instWS_3)
       DisplayValue("WD",Public.instWD_3)
+      DisplayValue("diag",Public.diag_3)
     EndSubMenu
-'    SubMenu("COM4")
-'      DisplayValue("Ux",Public.Ux_4)
-'      DisplayValue("Uy",Public.Uy_4)
-'      DisplayValue("Uz",Public.Uz_4)
-'      DisplayValue("Ts",Public.Ts_4)
-'      DisplayValue("WS",Public.instWS_4)
-'      DisplayValue("WD",Public.instWD_4)
-'    EndSubMenu
+    SubMenu("COM4")
+      DisplayValue("Ux",Public.Ux_4)
+      DisplayValue("Uy",Public.Uy_4)
+      DisplayValue("Uz",Public.Uz_4)
+      DisplayValue("Ts",Public.Ts_4)
+      DisplayValue("WS",Public.instWS_4)
+      DisplayValue("WD",Public.instWD_4)
+      DisplayValue("diag",Public.diag_4)
+    EndSubMenu
   EndSubMenu
   SubMenu("Sonic COM setup")
     MenuItem("On COM1?",com1_used)
@@ -444,14 +452,17 @@ Sub resetVars
   Uy_1 = NAN
   Uz_1 = NAN
   Ts_1 = NAN
+  diag_1 = 0    'need to be added to - must be number; could be set to NAN later
   Ux_2 = NAN
   Uy_2 = NAN
   Uz_2 = NAN
   Ts_2 = NAN
+  diag_2 = 0    'ditto...
   Ux_3 = NAN
   Uy_3 = NAN
   Uz_3 = NAN
   Ts_3 = NAN
+  diag_3 = 0
   Ux_4 = NAN
   Uy_4 = NAN
   Uz_4 = NAN
@@ -468,6 +479,7 @@ Sub resetVars
   negUy_2 = NAN
   negUy_3 = NAN
   negUy_4 = NAN
+  diag_4 = 0
 '  Move(sonic_1(1),4,NaN,1)    'IDK if Move() can be trusted to affect all four
 '  Move(sonic_2(1),4,NaN,1)    'modified program to use brute force
 '  Move(sonic_3(1),4,NaN,1)
@@ -527,7 +539,16 @@ BeginProg
   		MoveBytes (son1_in_parts(4),0,son1_in_str,15,5)
   		For j = 1 To 4                  'for each data byte
   			sonic_1(j) = son1_in_parts(j)	  'Convert from a string to float
-  			sonic_1(j) = sonic_1(j)/100	    'Scale the ATI data.
+  			If (sonic_1(j) = -9999)           'if reported -99.99 -> axis blockage / transducer failure
+  			  sonic_1(j) = NAN
+  			  diag_1 = diag_1 + 1*10^(j-1)              'place a 1 in ones/tens/hundreds/thousands place
+  			ElseIf ( sonic_1(j)=9999 )        'if reported +99.99 -> data quality algorithm on; ATI threw out data
+  			  sonic_1(j) = NAN
+  			  diag_1 = diag_1 + 2*10^(j-1)              'place a 2 in ones/... place
+  			Else                              'otherwise
+  			  sonic_1(j) = sonic_1(j)/100	      'Scale the ATI data.
+  			  diag_1 = NAN
+  			EndIf
   		Next j	
   		'calc horizontal WD, correct for sonic orientation, mag declination & adjust 0-360
    		instWD_1 = (ATN2(-1*Ux_1,-1*Uy_1)*DperR + azimuth_1 + declination + 360) MOD 360
@@ -545,7 +566,15 @@ BeginProg
   		MoveBytes (son2_in_parts(4),0,son2_in_str,15,5)
   		For j = 1 To 4                  'for each data byte
   			sonic_2(j) = son2_in_parts(j)	  'Convert from a string to float
-  			sonic_2(j) = sonic_2(j)/100	    'Scale the ATI data.
+  			If (sonic_2(j) = -9999)
+  			  sonic_2(j) = NAN
+  			  diag_2 = diag_2 + 1*10^(j-1)
+  			ElseIf (sonic_2(j) = 9999)
+  			  sonic_2(j) = NAN
+  			  diag_2 = diag_2 + 2*10^(j-1)
+  			Else
+  			  sonic_2(j) = sonic_2(j)/100	    'Scale the ATI data.
+  			EndIf
   		Next j	
   		'calc horizontal WD, correct for sonic orientation, mag declination & adjust 0-360
   		instWD_2 = (ATN2(-1*Ux_2,-1*Uy_2)*DperR + azimuth_2 + declination + 360 ) MOD 360
@@ -563,7 +592,15 @@ BeginProg
   		MoveBytes (son3_in_parts(4),0,son3_in_str,15,5)
   		For j = 1 To 4                  'for each data byte
   			sonic_3(j) = son3_in_parts(j)	  'Convert from a string to float
-  			sonic_3(j) = sonic_3(j)/100	    'Scale the ATI data.
+  			If (sonic_3(j) = -9999)
+  			  sonic_3(j) = NAN
+  			  diag_3 = diag_3 + 1*10^(j-1)
+  			ElseIf (sonic_3(j) = 9999)
+  			  sonic_3(j) = NAN
+  			  diag_3 = diag_3 + 2*10^(j-1)
+  			Else
+  			  sonic_3(j) = sonic_3(j)/100	    'Scale the ATI data.
+  			EndIf
   		Next j
   		'calc horizontal WD, correct for sonic orientation, mag declination & adjust 0-360
   		instWD_3 = (ATN2(-1*Ux_3,-1*Uy_3)*DperR + azimuth_3 + declination + 360 ) MOD 360
@@ -581,7 +618,15 @@ BeginProg
   		MoveBytes (son4_in_parts(4),0,son4_in_str,15,5)
   		For j = 1 To 4                  'for each data byte
   			sonic_4(j) = son4_in_parts(j)	  'Convert from a string to float
-  			sonic_4(j) = sonic_4(j)/100	    'Scale the ATI data.
+  			If (sonic_4(j) = -9999)
+  			  sonic_4(j) = NAN
+  			  diag_4 = diag_4 + 1*10^(j-1)
+  			ElseIf (sonic_4(j) = 9999)
+  			  sonic_4(j) = NAN
+  			  diag_4 = diag_4 +  2*10^(j-1)
+  			Else
+  			  sonic_4(j) = sonic_4(j)/100	    'Scale the ATI data.
+  			EndIf
   		Next j
   		'calc horizontal WD, correct for sonic orientation, mag declination & adjust 0-360
   		instWD_4 = (ATN2(-1*Ux_4,-1*Uy_4)*DperR + azimuth_4 + declination + 360 ) MOD 360
