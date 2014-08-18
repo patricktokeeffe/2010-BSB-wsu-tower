@@ -166,11 +166,11 @@ Alias instWS(3) = instWS_3
 Alias instWS(4) = instWS_4
 Units instWS = m/s
 
-Public negUy(4)
-Alias negUy(1) = negUy_1
-Alias negUy(2) = negUy_2
-Alias negUy(3) = negUy_3
-Alias negUy(4) = negUy_4
+'Public negUy(4)
+'Alias negUy(1) = negUy_1
+'Alias negUy(2) = negUy_2
+'Alias negUy(3) = negUy_3
+'Alias negUy(4) = negUy_4
 
 ' SONIC ORIENTATION / WIND VECTOR CALC OFFSETS
 Public declination
@@ -183,31 +183,31 @@ Units declination = degrees
 Units headings = degrees
 
 ' RECORDED AVERAGED WIND SPEEDS & DIRECTIONS
-Public avgWind(24)
-Alias avgWind(1)  = WSavg_1
-Alias avgWind(2)  = WDunitAvg_1
-Alias avgWind(3)  = WDepaStdev_1
-Alias avgWind(4)  = WSavg_1_dup
-Alias avgWind(5)  = WSrsltAvg_1
-Alias avgWind(6)  = WDrsltAvg_1
-Alias avgWind(7)  = WDcsiStdev_1
-Alias avgWind(8)  = WSstdev_1
-Alias avgWind(9)  = WSavg_2
-Alias avgWind(10) = WDunitAvg_2
-Alias avgWind(11) = WDepaStdev_2
-Alias avgWind(12) = WSavg_2_dup
-Alias avgWind(13) = WSrsltAvg_2
-Alias avgWind(14) = WDrsltAvg_2
-Alias avgWind(15) = WDcsiStdev_2
-Alias avgWind(16) = WSstdev_2
-Alias avgWind(17) = WSavg_3
-Alias avgWind(18) = WDunitAvg_3
-Alias avgWind(19) = WDepaStdev_3
-Alias avgWind(20) = WSavg_3_dup
-Alias avgWind(21) = WSrsltAvg_3
-Alias avgWind(22) = WDrsltAvg_3
-Alias avgWind(23) = WDcsiStdev_3
-Alias avgWind(24) = WSstdev_3
+'Public avgWind(24)
+'Alias avgWind(1)  = WSavg_1
+'Alias avgWind(2)  = WDunitAvg_1
+'Alias avgWind(3)  = WDepaStdev_1
+'Alias avgWind(4)  = WSavg_1_dup
+'Alias avgWind(5)  = WSrsltAvg_1
+'Alias avgWind(6)  = WDrsltAvg_1
+'Alias avgWind(7)  = WDcsiStdev_1
+'Alias avgWind(8)  = WSstdev_1
+'Alias avgWind(9)  = WSavg_2
+'Alias avgWind(10) = WDunitAvg_2
+'Alias avgWind(11) = WDepaStdev_2
+'Alias avgWind(12) = WSavg_2_dup
+'Alias avgWind(13) = WSrsltAvg_2
+'Alias avgWind(14) = WDrsltAvg_2
+'Alias avgWind(15) = WDcsiStdev_2
+'Alias avgWind(16) = WSstdev_2
+'Alias avgWind(17) = WSavg_3
+'Alias avgWind(18) = WDunitAvg_3
+'Alias avgWind(19) = WDepaStdev_3
+'Alias avgWind(20) = WSavg_3_dup
+'Alias avgWind(21) = WSrsltAvg_3
+'Alias avgWind(22) = WDrsltAvg_3
+'Alias avgWind(23) = WDcsiStdev_3
+'Alias avgWind(24) = WSstdev_3
 'Alias avgWind(25) = WSavg_4
 'Alias avgWind(26) = WDunitAvg_4
 'Alias avgWind(27) = WDepaStdev_4
@@ -227,42 +227,42 @@ DataTable(wsuWind_10hz,save_data,-1)
   Sample(5,sonic_4,FP2)
 EndTable
 
-DataTable(wsuWind_5min,save_data,-1)
-  DataInterval(0,5,Min,10)
-  CardOut(0,-1)
-  'Average(3,sonic_1(1),FP2,False)
-  Average(1,Ux_1,FP2,(Ux_1=NAN))
-  Average(1,Uy_1,FP2,(Uy_1=NAN))
-  Average(1,Uz_1,FP2,(Uz_1=NAN))
-  Sample(1,WSavg_1,FP2)
-  Sample(1,WSrsltAvg_1,FP2)
-  Sample(1,WSstdev_1,FP2)
-  Sample(1,WDunitAvg_1,FP2)
-  Sample(1,WDrsltAvg_1,FP2)
-  Sample(1,WDepaStdev_1,FP2)
-  Sample(1,WDcsiStdev_1,FP2)
-  'Average(3,sonic_2(1),FP2,False)
-  Average(1,Ux_2,FP2,(Ux_2=NAN))
-  Average(1,Uy_2,FP2,(Uy_2=NAN))
-  Average(1,Uz_2,FP2,(Uz_2=NAN))
-  Sample(1,WSavg_2,FP2)
-  Sample(1,WSrsltAvg_2,FP2)
-  Sample(1,WSstdev_2,FP2)
-  Sample(1,WDunitAvg_2,FP2)
-  Sample(1,WDrsltAvg_2,FP2)
-  Sample(1,WDepaStdev_2,FP2)
-  Sample(1,WDcsiStdev_2,FP2)
-  'Average(3,sonic_3(1),FP2,False)
-  Average(1,Ux_3,FP2,(Ux_3=NAN))
-  Average(1,Uy_3,FP2,(Uy_3=NAN))
-  Average(1,Uz_3,FP2,(Uz_3=NAN))
-  Sample(1,WSavg_3,FP2)
-  Sample(1,WSrsltAvg_3,FP2)
-  Sample(1,WSstdev_3,FP2)
-  Sample(1,WDunitAvg_3,FP2)
-  Sample(1,WDrsltAvg_3,FP2)
-  Sample(1,WDepaStdev_3,FP2)
-  Sample(1,WDcsiStdev_3,FP2)
+'DataTable(wsuWind_5min,save_data,-1)
+'  DataInterval(0,5,Min,10)
+'  CardOut(0,-1)
+'  'Average(3,sonic_1(1),FP2,False)
+'  Average(1,Ux_1,FP2,(Ux_1=NAN))
+'  Average(1,Uy_1,FP2,(Uy_1=NAN))
+'  Average(1,Uz_1,FP2,(Uz_1=NAN))
+'  Sample(1,WSavg_1,FP2)
+'  Sample(1,WSrsltAvg_1,FP2)
+'  Sample(1,WSstdev_1,FP2)
+'  Sample(1,WDunitAvg_1,FP2)
+'  Sample(1,WDrsltAvg_1,FP2)
+'  Sample(1,WDepaStdev_1,FP2)
+'  Sample(1,WDcsiStdev_1,FP2)
+'  'Average(3,sonic_2(1),FP2,False)
+'  Average(1,Ux_2,FP2,(Ux_2=NAN))
+'  Average(1,Uy_2,FP2,(Uy_2=NAN))
+'  Average(1,Uz_2,FP2,(Uz_2=NAN))
+'  Sample(1,WSavg_2,FP2)
+'  Sample(1,WSrsltAvg_2,FP2)
+'  Sample(1,WSstdev_2,FP2)
+'  Sample(1,WDunitAvg_2,FP2)
+'  Sample(1,WDrsltAvg_2,FP2)
+'  Sample(1,WDepaStdev_2,FP2)
+'  Sample(1,WDcsiStdev_2,FP2)
+'  'Average(3,sonic_3(1),FP2,False)
+'  Average(1,Ux_3,FP2,(Ux_3=NAN))
+'  Average(1,Uy_3,FP2,(Uy_3=NAN))
+'  Average(1,Uz_3,FP2,(Uz_3=NAN))
+'  Sample(1,WSavg_3,FP2)
+'  Sample(1,WSrsltAvg_3,FP2)
+'  Sample(1,WSstdev_3,FP2)
+'  Sample(1,WDunitAvg_3,FP2)
+'  Sample(1,WDrsltAvg_3,FP2)
+'  Sample(1,WDepaStdev_3,FP2)
+'  Sample(1,WDcsiStdev_3,FP2)
 '  Average(3,sonic_4(1),FP2,False)
 '  Sample(1,WSavg_4,FP2)
 '  Sample(1,WSrsltAvg_4,FP2)
@@ -271,46 +271,46 @@ DataTable(wsuWind_5min,save_data,-1)
 '  Sample(1,WDrsltAvg_4,FP2)
 '  Sample(1,WDepaStdev_4,FP2)
 '  Sample(1,WDcsiStdev_4,FP2)
-  Average(1,batt_V,FP2,(batt_V=NAN))
-EndTable
+'  Average(1,batt_V,FP2,(batt_V=NAN))
+'EndTable
 
-DataTable(wsuWind_30min,save_data,-1)
-  DataInterval(0,30,min,10)
-  CardOut(0,-1)
-  'Average(3,sonic_1(1),FP2,False)
-  Average(1,Ux_1,FP2,(Ux_1=NAN))
-  Average(1,Uy_1,FP2,(Uy_1=NAN))
-  Average(1,Uz_1,FP2,(Uz_1=NAN))
-  Sample(1,WSavg_1,FP2)
-  Sample(1,WSrsltAvg_1,FP2)
-  Sample(1,WSstdev_1,FP2)
-  Sample(1,WDunitAvg_1,FP2)
-  Sample(1,WDrsltAvg_1,FP2)
-  Sample(1,WDepaStdev_1,FP2)
-  Sample(1,WDcsiStdev_1,FP2)
-  'Average(3,sonic_2(1),FP2,False)
-  Average(1,Ux_2,FP2,(Ux_2=NAN))
-  Average(1,Uy_2,FP2,(Uy_2=NAN))
-  Average(1,Uz_2,FP2,(Uz_2=NAN))
-  Sample(1,WSavg_2,FP2)
-  Sample(1,WSrsltAvg_2,FP2)
-  Sample(1,WSstdev_2,FP2)
-  Sample(1,WDunitAvg_2,FP2)
-  Sample(1,WDrsltAvg_2,FP2)
-  Sample(1,WDepaStdev_2,FP2)
-  Sample(1,WDcsiStdev_2,FP2)
-  'Average(3,sonic_3(1),FP2,False)
-  Average(1,Ux_3,FP2,(Ux_3=NAN))
-  Average(1,Uy_3,FP2,(Uy_3=NAN))
-  Average(1,Uz_3,FP2,(Uz_3=NAN))
-  Sample(1,WSavg_3,FP2)
-  Sample(1,WSrsltAvg_3,FP2)
-  Sample(1,WSstdev_3,FP2)
-  Sample(1,WDunitAvg_3,FP2)
-  Sample(1,WDrsltAvg_3,FP2)
-  Sample(1,WDepaStdev_3,FP2)
-  Sample(1,WDcsiStdev_3,FP2)
-'  Average(3,sonic_4(1),FP2,False)
+'DataTable(wsuWind_30min,save_data,-1)
+'  DataInterval(0,30,min,10)
+'  CardOut(0,-1)
+'  'Average(3,sonic_1(1),FP2,False)    'replaced with seperate avg()
+'  Average(1,Ux_1,FP2,(Ux_1=NAN))
+'  Average(1,Uy_1,FP2,(Uy_1=NAN))
+'  Average(1,Uz_1,FP2,(Uz_1=NAN))
+'  Sample(1,WSavg_1,FP2)
+'  Sample(1,WSrsltAvg_1,FP2)
+'  Sample(1,WSstdev_1,FP2)
+'  Sample(1,WDunitAvg_1,FP2)
+'  Sample(1,WDrsltAvg_1,FP2)
+'  Sample(1,WDepaStdev_1,FP2)
+'  Sample(1,WDcsiStdev_1,FP2)
+'  'Average(3,sonic_2(1),FP2,False)    'replaced with seperate avg() 
+'  Average(1,Ux_2,FP2,(Ux_2=NAN))
+'  Average(1,Uy_2,FP2,(Uy_2=NAN))
+'  Average(1,Uz_2,FP2,(Uz_2=NAN))
+'  Sample(1,WSavg_2,FP2)
+'  Sample(1,WSrsltAvg_2,FP2)
+'  Sample(1,WSstdev_2,FP2)
+'  Sample(1,WDunitAvg_2,FP2)
+'  Sample(1,WDrsltAvg_2,FP2)
+'  Sample(1,WDepaStdev_2,FP2)
+'  Sample(1,WDcsiStdev_2,FP2)
+'  'Average(3,sonic_3(1),FP2,False)    'replaced with seperate avg()
+'  Average(1,Ux_3,FP2,(Ux_3=NAN))
+'  Average(1,Uy_3,FP2,(Uy_3=NAN))
+'  Average(1,Uz_3,FP2,(Uz_3=NAN))
+'  Sample(1,WSavg_3,FP2)
+'  Sample(1,WSrsltAvg_3,FP2)
+'  Sample(1,WSstdev_3,FP2)
+'  Sample(1,WDunitAvg_3,FP2)
+'  Sample(1,WDrsltAvg_3,FP2)
+'  Sample(1,WDepaStdev_3,FP2)
+'  Sample(1,WDcsiStdev_3,FP2)
+'  Average(3,sonic_4(1),FP2,False)    'com4 not used, should be changed tho
 '  Sample(1,WSavg_4,FP2)
 '  Sample(1,WSrsltAvg_4,FP2)
 '  Sample(1,WSstdev_4,FP2)
@@ -318,56 +318,56 @@ DataTable(wsuWind_30min,save_data,-1)
 '  Sample(1,WDrsltAvg_4,FP2)
 '  Sample(1,WDepaStdev_4,FP2)
 '  Sample(1,WDcsiStdev_4,FP2)
-  Average(1,batt_V,FP2,(batt_V=NAN))
-EndTable
+'  Average(1,batt_V,FP2,(batt_V=NAN))
+'EndTable
 
-DataTable(windVec_5min,save_data,1)
-  DataInterval(0,5,Min,1)
-  WindVector(1,negUy_1,Ux_1,FP2,(NOT(com1_used) OR (negUy_1=NAN) OR (Ux_1=NAN)),0,1,0)
-  FieldNames("1_avgWS:, 1_unitAvgWD:, 1_epaStdevWD")
-  WindVector(1,negUy_1,Ux_1,FP2,(NOT(com1_used) OR (negUy_1=NAN) OR (Ux_1=NAN)),0,1,2)
-  FieldNames("1_dup:, 1_rsltAvgWS:, 1_rsltAvgWD:, 1_csiStdevWD")
-  StdDev(1,instWS_1,FP2,(NOT(com1_used) OR (instWS_1=NAN)))
-  WindVector(1,negUy_2,Ux_2,FP2,(NOT(com2_used) OR (negUy_2=NAN) OR (Ux_2=NAN)),0,1,0)
-  FieldNames("2_avgWS:, 2_unitAvgWD:, 2_epaStdevWD")
-  WindVector(1,negUy_2,Ux_2,FP2,(NOT(com2_used) OR (negUy_2=NAN) OR (Ux_2=NAN)),0,1,2)
-  FieldNames("2_dup:, 2_rsltAvgWS:, 2_rsltAvgWD:, 2_csiStdevWD")
-  StdDev(1,instWS_2,FP2,(NOT(com2_used) OR (instWS_2=NAN)))
-  WindVector(1,negUy_3,Ux_3,FP2,(NOT(com3_used) OR (negUy_3=NAN) OR (Ux_3=NAN)),0,1,0)
-  FieldNames("3_avgWS:, 3_unitAvgWD:, 3_epaStdevWD")
-  WindVector(1,negUy_3,Ux_3,FP2,(NOT(com3_used) OR (negUy_3=NAN) OR (Ux_3=NAN)),0,1,2)
-  FieldNames("3_dup:, 3_rsltAvgWS:, 3_rsltAvgWD:, 3_csiStdevWD")
-  StdDev(1,instWS_3,FP2,(NOT(com3_used) OR (instWS_3=NAN)))
+'DataTable(windVec_5min,save_data,1)
+'  DataInterval(0,5,Min,1)
+'  WindVector(1,negUy_1,Ux_1,FP2,(NOT(com1_used) OR (negUy_1=NAN) OR (Ux_1=NAN)),0,1,0)
+'  FieldNames("1_avgWS:, 1_unitAvgWD:, 1_epaStdevWD")
+'  WindVector(1,negUy_1,Ux_1,FP2,(NOT(com1_used) OR (negUy_1=NAN) OR (Ux_1=NAN)),0,1,2)
+'  FieldNames("1_dup:, 1_rsltAvgWS:, 1_rsltAvgWD:, 1_csiStdevWD")
+'  StdDev(1,instWS_1,FP2,(NOT(com1_used) OR (instWS_1=NAN)))
+'  WindVector(1,negUy_2,Ux_2,FP2,(NOT(com2_used) OR (negUy_2=NAN) OR (Ux_2=NAN)),0,1,0)
+'  FieldNames("2_avgWS:, 2_unitAvgWD:, 2_epaStdevWD")
+'  WindVector(1,negUy_2,Ux_2,FP2,(NOT(com2_used) OR (negUy_2=NAN) OR (Ux_2=NAN)),0,1,2)
+'  FieldNames("2_dup:, 2_rsltAvgWS:, 2_rsltAvgWD:, 2_csiStdevWD")
+'  StdDev(1,instWS_2,FP2,(NOT(com2_used) OR (instWS_2=NAN)))
+'  WindVector(1,negUy_3,Ux_3,FP2,(NOT(com3_used) OR (negUy_3=NAN) OR (Ux_3=NAN)),0,1,0)
+'  FieldNames("3_avgWS:, 3_unitAvgWD:, 3_epaStdevWD")
+'  WindVector(1,negUy_3,Ux_3,FP2,(NOT(com3_used) OR (negUy_3=NAN) OR (Ux_3=NAN)),0,1,2)
+'  FieldNames("3_dup:, 3_rsltAvgWS:, 3_rsltAvgWD:, 3_csiStdevWD")
+'  StdDev(1,instWS_3,FP2,(NOT(com3_used) OR (instWS_3=NAN)))
 '  WindVector(1,negUy_4,Ux_4,FP2,NOT(com4_used),0,1,0)
 '  FieldNames("4_avgWS:, 4_unitAvgWD:, 4_epaStdevWD")
 '  WindVector(1,negUy_4,Ux_4,FP2,NOT(com4_used),0,1,2)
 '  FieldNames("4_dup:, 4_rsltAvgWS:, 4_rsltAvgWD:, 4_csiStdevWD")
 '  StdDev(1,instWS_4,FP2,NOT(com4_used))
-EndTable
+'EndTable
 
-DataTable(windVec_30min,save_data,1)
-  DataInterval(0,30,Min,1)
-  WindVector(1,negUy_1,Ux_1,FP2,NOT(com1_used) OR (negUy_1=NAN) OR (Ux_1=NAN)),0,1,0)
-  FieldNames("1_avgWS:, 1_unitAvgWD:, 1_epaStdevWD")
-  WindVector(1,negUy_1,Ux_1,FP2,NOT(com1_used) OR (negUy_1=NAN) OR (Ux_1=NAN)),0,1,2)
-  FieldNames("1_dup:, 1_rsltAvgWS:, 1_rsltAvgWD:, 1_csiStdevWD")
-  StdDev(1,instWS_1,FP2,(NOT(com1_used) OR (instWS_1=NAN)))
-  WindVector(1,negUy_2,Ux_2,FP2,(NOT(com2_used) OR (negUy_1=NAN) OR (Ux_1=NAN)),0,1,0)
-  FieldNames("2_avgWS:, 2_unitAvgWD:, 2_epaStdevWD")
-  WindVector(1,negUy_2,Ux_2,FP2,(NOT(com2_used) OR (negUy_1=NAN) OR (Ux_1=NAN)),0,1,2)
-  FieldNames("2_dup:, 2_rsltAvgWS:, 2_rsltAvgWD:, 2_csiStdevWD")
-  StdDev(1,instWS_2,FP2,(NOT(com2_used) OR (instWS_2=NAN)))
-  WindVector(1,negUy_3,Ux_3,FP2,(NOT(com3_used) OR (negUy_1=NAN) OR (Ux_1=NAN)),0,1,0)
-  FieldNames("3_avgWS:, 3_unitAvgWD:, 3_epaStdevWD")
-  WindVector(1,negUy_3,Ux_3,FP2,(NOT(com3_used) OR (negUy_1=NAN) OR (Ux_1=NAN)),0,1,2)
-  FieldNames("3_dup:, 3_rsltAvgWS:, 3_rsltAvgWD:, 3_csiStdevWD")
-  StdDev(1,instWS_3,FP2,(NOT(com3_used) OR (instWS_3=NAN)))
+'DataTable(windVec_30min,save_data,1)
+'  DataInterval(0,30,Min,1)
+'  WindVector(1,negUy_1,Ux_1,FP2,(NOT(com1_used) OR (negUy_1=NAN) OR (Ux_1=NAN)),0,1,0)
+'  FieldNames("1_avgWS:, 1_unitAvgWD:, 1_epaStdevWD")
+'  WindVector(1,negUy_1,Ux_1,FP2,(NOT(com1_used) OR (negUy_1=NAN) OR (Ux_1=NAN)),0,1,2)
+'  FieldNames("1_dup:, 1_rsltAvgWS:, 1_rsltAvgWD:, 1_csiStdevWD")
+'  StdDev(1,instWS_1,FP2,(NOT(com1_used) OR (instWS_1=NAN)))
+'  WindVector(1,negUy_2,Ux_2,FP2,(NOT(com2_used) OR (negUy_1=NAN) OR (Ux_1=NAN)),0,1,0)
+'  FieldNames("2_avgWS:, 2_unitAvgWD:, 2_epaStdevWD")
+'  WindVector(1,negUy_2,Ux_2,FP2,(NOT(com2_used) OR (negUy_1=NAN) OR (Ux_1=NAN)),0,1,2)
+'  FieldNames("2_dup:, 2_rsltAvgWS:, 2_rsltAvgWD:, 2_csiStdevWD")
+'  StdDev(1,instWS_2,FP2,(NOT(com2_used) OR (instWS_2=NAN)))
+'  WindVector(1,negUy_3,Ux_3,FP2,(NOT(com3_used) OR (negUy_1=NAN) OR (Ux_1=NAN)),0,1,0)
+'  FieldNames("3_avgWS:, 3_unitAvgWD:, 3_epaStdevWD")
+'  WindVector(1,negUy_3,Ux_3,FP2,(NOT(com3_used) OR (negUy_1=NAN) OR (Ux_1=NAN)),0,1,2)
+'  FieldNames("3_dup:, 3_rsltAvgWS:, 3_rsltAvgWD:, 3_csiStdevWD")
+'  StdDev(1,instWS_3,FP2,(NOT(com3_used) OR (instWS_3=NAN)))
 '  WindVector(1,negUy_4,Ux_4,FP2,NOT(com4_used),0,1,0)
 '  FieldNames("4_avgWS:, 4_unitAvgWD:, 4_epaStdevWD")
 '  WindVector(1,negUy_4,Ux_4,FP2,NOT(com4_used),0,1,2)
 '  FieldNames("4_dup:, 4_rsltAvgWS:, 4_rsltAvgWD:, 4_csiStdevWD")
 '  StdDev(1,instWS_4,FP2,NOT(com4_used))
-EndTable
+'EndTable
 
 
 '''''' Datalogger Menu ''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -475,11 +475,11 @@ Sub resetVars
   instWD_1 = NAN
   instWD_3 = NAN
   instWD_4 = NAN
-  negUy_1 = NAN
-  negUy_2 = NAN
-  negUy_3 = NAN
-  negUy_4 = NAN
   diag_4 = 0
+  'negUy_1 = NAN
+  'negUy_2 = NAN
+  'negUy_3 = NAN
+  'negUy_4 = NAN
 '  Move(sonic_1(1),4,NaN,1)    'IDK if Move() can be trusted to affect all four
 '  Move(sonic_2(1),4,NaN,1)    'modified program to use brute force
 '  Move(sonic_3(1),4,NaN,1)
@@ -553,7 +553,7 @@ BeginProg
   		'calc horizontal WD, correct for sonic orientation, mag declination & adjust 0-360
    		instWD_1 = (ATN2(-1*Ux_1,-1*Uy_1)*DperR + azimuth_1 + declination + 360) MOD 360
 		  instWS_1 = SQR(Ux_1^2+Uy_1^2)                                     'calc WS
-		  negUy_1 = -1*Uy_1                                                 'calc east component (-Uy)
+		  'negUy_1 = -1*Uy_1                                                 'calc east component (-Uy)
   	EndIf
   	'SerialFlush(Com1)
 		
@@ -579,7 +579,7 @@ BeginProg
   		'calc horizontal WD, correct for sonic orientation, mag declination & adjust 0-360
   		instWD_2 = (ATN2(-1*Ux_2,-1*Uy_2)*DperR + azimuth_2 + declination + 360 ) MOD 360
 		  instWS_2 = SQR(Ux_2^2+Uy_2^2)                                     'calc WS
-		  negUy_2 = -1*Uy_2                                                 'calc east component (-Uy)
+		  'negUy_2 = -1*Uy_2                                                 'calc east component (-Uy)
     EndIf	
     'SerialFlush(Com2)
 
@@ -605,7 +605,7 @@ BeginProg
   		'calc horizontal WD, correct for sonic orientation, mag declination & adjust 0-360
   		instWD_3 = (ATN2(-1*Ux_3,-1*Uy_3)*DperR + azimuth_3 + declination + 360 ) MOD 360
 		  instWS_3 = SQR(Ux_3^2+Uy_3^2)                                     'calc WS
-		  negUy_3 = -1*Uy_3                                                 'calc east component (-Uy)
+		  'negUy_3 = -1*Uy_3                                                 'calc east component (-Uy)
     EndIf
     'SerialFlush(Com3)
 	  
@@ -631,7 +631,7 @@ BeginProg
   		'calc horizontal WD, correct for sonic orientation, mag declination & adjust 0-360
   		instWD_4 = (ATN2(-1*Ux_4,-1*Uy_4)*DperR + azimuth_4 + declination + 360 ) MOD 360
 		  instWS_4 = SQR(Ux_4^2+Uy_4^2)                                     'calc WS
-		  negUy_4 = -1*Uy_4                                                 'calc east component (-Uy)
+		  'negUy_4 = -1*Uy_4                                                 'calc east component (-Uy)
   	EndIf
   	'SerialFlush(Com4)
   	
