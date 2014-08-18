@@ -1,0 +1,660 @@
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'  Washington State University                                                 '
+'  Big Southern Butte Turbulence Field Study                                   '
+'                                                                              '
+'  CR3000 Datalogger - WSU Wind Tower                                          '
+'  pokeeffe - patrick.okeeffe@email.wsu.edu                                    '
+'  Last modified 2010.07.14                                                    '
+'                                                                              '
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+
+'''''' PROGRAM DEFAULTS ''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+' Define the following values to load upon program reset (or following catastrophe)
+' These values can be adjusted during run-time using the program menu
+Const DEF_save_data = True
+
+Const DEF_com1_used = True
+Const DEF_com2_used = True
+Const DEF_com3_used = True
+Const DEF_com4_used = False
+
+Const DEF_azimuth_1 = 268
+Const DEF_azimuth_2 = 268
+Const DEF_azimuth_3 = 268
+Const DEF_azimuth_4 = 0           'COM4 not used
+Const DEF_declination = 13        'value for Big Southern Butte, ID early July 2010
+
+'''''' ATI sonic configuration '''''''''''''''''''''''''''''''''''''''''''''''''
+' ASCII mode: terse        Data quality algorithm: ON
+' Baud rate: 9600          Shadow correction: ON
+' Parity: even             Remove RH from temp calc: OFF
+' data bits: 7             Sampling 10Hz (20 samples, 5ms apart per output)
+' stop bits: 1             Output: U,V,W,T
+'                          Data lag: 1/10th second
+
+'''''' PS100 charger wiring ''''''''''''''''''''''''''''''''''''''''''''''''''''
+'POWER IN (15-  vDC)
+'one      18vDC dell laptop power supply (+)
+'other    18vDC dell laptop power supply (-)
+'
+'POWER OUT
+'12V      CR3000 12v
+'12V      ATI sonics (+)
+'G        CR3000 ground
+'G        ATI sonics (-)
+
+'''''' CR3000 Wiring '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'POWER IN (10-16vDC)
+'12V			PS100 charger (+)
+'G				PS100 charger (-)
+'
+'BATTERY BASE POWER IN 
+'one      18vDC dell laptop power supply (+)
+'other    18vDC dell laptop power supply (-)
+'
+'COM PORTS
+'C1   green    COM1 Tx
+'C2   red      COM1 Rx
+'C3   brown    COM2 Tx
+'C4   white    COM2 Rx
+'G    black    common ground/shield
+'C5   blue     COM3 Tx
+'C6   orange   COM3 Rx
+'C7   yellow   COM4 Tx
+'C8   violet   COM4 Rx
+
+'''''' Variables '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Dim initialized = False       'used as flag to reinit; I don't trust PreserveVariables function yet
+Dim j 
+Const R = 8.314472*10^-5
+Const DperR = 180/3.14159
+Const Yes = True
+Const No = False
+
+' DATALOGGER
+Public panel_temp_C
+Public batt_V
+Public low_12V_cnt
+Units panel_temp_C = C
+Units batt_V = volts
+Units low_12V_cnt = records
+
+' MENU/STATE VARIABLES
+Public save_data As Boolean
+Public com_states(4) As Boolean
+Alias com_states(1) = com1_used
+Alias com_states(2) = com2_used
+Alias com_states(3) = com3_used
+Alias com_states(4) = com4_used
+
+' TIME VARS
+Public rTime(9)
+Alias rTime(1) = rYear
+Alias rTime(2) = rMonth
+Alias rTime(3) = rDay
+Alias rTime(4) = rHour
+Alias rTime(5) = rMinute
+Alias rTime(6) = rSecond
+Alias rTime(7) = rMicroSec
+Alias rTime(8) = rWeekDay
+Alias rTime(9) = rDayOfYear
+
+' COM 1 sonic input
+Public sonic_1(4)
+Alias sonic_1(1) = Ux_1
+Alias sonic_1(2) = Uy_1
+Alias sonic_1(3) = Uz_1
+Alias sonic_1(4) = Ts_1
+Units sonic_1 = m/s
+Units Ts_1 = C
+Dim son1_in_str As String * 20
+Dim son1_in_parts(4) As String * 5
+Dim bytes_back_1
+
+' COM 2 sonic input
+Public sonic_2(4)
+Alias sonic_2(1) = Ux_2
+Alias sonic_2(2) = Uy_2
+Alias sonic_2(3) = Uz_2
+Alias sonic_2(4) = Ts_2
+Units sonic_2 = m/s
+Units Ts_2 = C
+Dim son2_in_str As String * 20
+Dim son2_in_parts(4) As String * 5
+Dim bytes_back_2
+
+' COM 3 sonic input
+Public sonic_3(4)
+Alias sonic_3(1) = Ux_3
+Alias sonic_3(2) = Uy_3
+Alias sonic_3(3) = Uz_3
+Alias sonic_3(4) = Ts_3
+Units sonic_3 = m/s
+Units Ts_3 = C
+Dim son3_in_str As String * 20
+Dim son3_in_parts(4) As String * 5
+Dim bytes_back_3
+
+' COM 4 sonic input
+Public sonic_4(4)
+Alias sonic_4(1) = Ux_4
+Alias sonic_4(2) = Uy_4
+Alias sonic_4(3) = Uz_4
+Alias sonic_4(4) = Ts_4
+Units sonic_4 = m/s
+Units Ts_4 = C
+Dim son4_in_str As String * 20
+Dim son4_in_parts(4) As String * 5
+Dim bytes_back_4
+
+' UNRECORDED INST. WIND SPEEDS & DIRECTIONS
+Public instWD(4)
+Alias instWD(1) = instWD_1
+Alias instWD(2) = instWD_2
+Alias instWD(3) = instWD_3
+Alias instWD(4) = instWD_4
+Units instWD = degrees
+
+Public instWS(4)
+Alias instWS(1) = instWS_1
+Alias instWS(2) = instWS_2
+Alias instWS(3) = instWS_3
+Alias instWS(4) = instWS_4
+Units instWS = m/s
+
+Public negUy(4)
+Alias negUy(1) = negUy_1
+Alias negUy(2) = negUy_2
+Alias negUy(3) = negUy_3
+Alias negUy(4) = negUy_4
+
+' SONIC ORIENTATION / WIND VECTOR CALC OFFSETS
+Public declination
+Public headings(4)
+Alias headings(1) = azimuth_1
+Alias headings(2) = azimuth_2
+Alias headings(3) = azimuth_3
+Alias headings(4) = azimuth_4
+Units declination = degrees
+Units headings = degrees
+
+' RECORDED AVERAGED WIND SPEEDS & DIRECTIONS
+Public avgWind(24)
+Alias avgWind(1)  = WSavg_1
+Alias avgWind(2)  = WDunitAvg_1
+Alias avgWind(3)  = WDepaStdev_1
+Alias avgWind(4)  = WSavg_1_dup
+Alias avgWind(5)  = WSrsltAvg_1
+Alias avgWind(6)  = WDrsltAvg_1
+Alias avgWind(7)  = WDcsiStdev_1
+Alias avgWind(8)  = WSstdev_1
+Alias avgWind(9)  = WSavg_2
+Alias avgWind(10) = WDunitAvg_2
+Alias avgWind(11) = WDepaStdev_2
+Alias avgWind(12) = WSavg_2_dup
+Alias avgWind(13) = WSrsltAvg_2
+Alias avgWind(14) = WDrsltAvg_2
+Alias avgWind(15) = WDcsiStdev_2
+Alias avgWind(16) = WSstdev_2
+Alias avgWind(17) = WSavg_3
+Alias avgWind(18) = WDunitAvg_3
+Alias avgWind(19) = WDepaStdev_3
+Alias avgWind(20) = WSavg_3_dup
+Alias avgWind(21) = WSrsltAvg_3
+Alias avgWind(22) = WDrsltAvg_3
+Alias avgWind(23) = WDcsiStdev_3
+Alias avgWind(24) = WSstdev_3
+'Alias avgWind(25) = WSavg_4
+'Alias avgWind(26) = WDunitAvg_4
+'Alias avgWind(27) = WDepaStdev_4
+'Alias avgWind(28) = WSavg_4_dup
+'Alias avgWind(29) = WSrsltAvg_4
+'Alias avgWind(30) = WDrsltAvg_4
+'Alias avgWind(31) = WDcsiStdev_4
+'Alias avgWind(32) = WSstdev_4
+
+'''''' Data Tables ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+DataTable(wsuWind_10hz,save_data,-1)
+	DataInterval(0,0,mSec,100)  ' set data inteval same as scan interval
+	CardOut(0,-1)                ' store on card: ring fill, allocate all memory
+  Sample(4,sonic_1,IEEE4)
+  Sample(4,sonic_2,IEEE4)
+  Sample(4,sonic_3,IEEE4)
+  Sample(4,sonic_4,IEEE4)
+EndTable
+
+DataTable(wsuWind_5min,save_data,-1)
+  DataInterval(0,5,Min,10)
+  CardOut(0,-1)
+  'Average(3,sonic_1(1),FP2,False)
+  Average(1,Ux_1,FP2,(Ux_1=NAN))
+  Average(1,Uy_1,FP2,(Uy_1=NAN))
+  Average(1,Uz_1,FP2,(Uz_1=NAN))
+  Sample(1,WSavg_1,FP2)
+  Sample(1,WSrsltAvg_1,FP2)
+  Sample(1,WSstdev_1,FP2)
+  Sample(1,WDunitAvg_1,FP2)
+  Sample(1,WDrsltAvg_1,FP2)
+  Sample(1,WDepaStdev_1,FP2)
+  Sample(1,WDcsiStdev_1,FP2)
+  'Average(3,sonic_2(1),FP2,False)
+  Average(1,Ux_2,FP2,(Ux_2=NAN))
+  Average(1,Uy_2,FP2,(Uy_2=NAN))
+  Average(1,Uz_2,FP2,(Uz_2=NAN))
+  Sample(1,WSavg_2,FP2)
+  Sample(1,WSrsltAvg_2,FP2)
+  Sample(1,WSstdev_2,FP2)
+  Sample(1,WDunitAvg_2,FP2)
+  Sample(1,WDrsltAvg_2,FP2)
+  Sample(1,WDepaStdev_2,FP2)
+  Sample(1,WDcsiStdev_2,FP2)
+  'Average(3,sonic_3(1),FP2,False)
+  Average(1,Ux_3,FP2,(Ux_3=NAN))
+  Average(1,Uy_3,FP2,(Uy_3=NAN))
+  Average(1,Uz_3,FP2,(Uz_3=NAN))
+  Sample(1,WSavg_3,FP2)
+  Sample(1,WSrsltAvg_3,FP2)
+  Sample(1,WSstdev_3,FP2)
+  Sample(1,WDunitAvg_3,FP2)
+  Sample(1,WDrsltAvg_3,FP2)
+  Sample(1,WDepaStdev_3,FP2)
+  Sample(1,WDcsiStdev_3,FP2)
+'  Average(3,sonic_4(1),FP2,False)
+'  Sample(1,WSavg_4,FP2)
+'  Sample(1,WSrsltAvg_4,FP2)
+'  Sample(1,WSstdev_4,FP2)
+'  Sample(1,WDunitAvg_4,FP2)
+'  Sample(1,WDrsltAvg_4,FP2)
+'  Sample(1,WDepaStdev_4,FP2)
+'  Sample(1,WDcsiStdev_4,FP2)
+  Average(1,batt_V,FP2,(batt_V=NAN))
+EndTable
+
+DataTable(wsuWind_30min,save_data,-1)
+  DataInterval(0,30,min,10)
+  CardOut(0,-1)
+  'Average(3,sonic_1(1),FP2,False)
+  Average(1,Ux_1,FP2,(Ux_1=NAN))
+  Average(1,Uy_1,FP2,(Uy_1=NAN))
+  Average(1,Uz_1,FP2,(Uz_1=NAN))
+  Sample(1,WSavg_1,FP2)
+  Sample(1,WSrsltAvg_1,FP2)
+  Sample(1,WSstdev_1,FP2)
+  Sample(1,WDunitAvg_1,FP2)
+  Sample(1,WDrsltAvg_1,FP2)
+  Sample(1,WDepaStdev_1,FP2)
+  Sample(1,WDcsiStdev_1,FP2)
+  'Average(3,sonic_2(1),FP2,False)
+  Average(1,Ux_2,FP2,(Ux_2=NAN))
+  Average(1,Uy_2,FP2,(Uy_2=NAN))
+  Average(1,Uz_2,FP2,(Uz_2=NAN))
+  Sample(1,WSavg_2,FP2)
+  Sample(1,WSrsltAvg_2,FP2)
+  Sample(1,WSstdev_2,FP2)
+  Sample(1,WDunitAvg_2,FP2)
+  Sample(1,WDrsltAvg_2,FP2)
+  Sample(1,WDepaStdev_2,FP2)
+  Sample(1,WDcsiStdev_2,FP2)
+  'Average(3,sonic_3(1),FP2,False)
+  Average(1,Ux_3,FP2,(Ux_3=NAN))
+  Average(1,Uy_3,FP2,(Uy_3=NAN))
+  Average(1,Uz_3,FP2,(Uz_3=NAN))
+  Sample(1,WSavg_3,FP2)
+  Sample(1,WSrsltAvg_3,FP2)
+  Sample(1,WSstdev_3,FP2)
+  Sample(1,WDunitAvg_3,FP2)
+  Sample(1,WDrsltAvg_3,FP2)
+  Sample(1,WDepaStdev_3,FP2)
+  Sample(1,WDcsiStdev_3,FP2)
+'  Average(3,sonic_4(1),FP2,False)
+'  Sample(1,WSavg_4,FP2)
+'  Sample(1,WSrsltAvg_4,FP2)
+'  Sample(1,WSstdev_4,FP2)
+'  Sample(1,WDunitAvg_4,FP2)
+'  Sample(1,WDrsltAvg_4,FP2)
+'  Sample(1,WDepaStdev_4,FP2)
+'  Sample(1,WDcsiStdev_4,FP2)
+  Average(1,batt_V,FP2,(batt_V=NAN))
+EndTable
+
+DataTable(windVec_5min,save_data,1)
+  DataInterval(0,5,Min,1)
+  WindVector(1,negUy_1,Ux_1,FP2,(NOT(com1_used) OR (negUy_1=NAN) OR (Ux_1=NAN)),0,1,0)
+  FieldNames("1_avgWS:, 1_unitAvgWD:, 1_epaStdevWD")
+  WindVector(1,negUy_1,Ux_1,FP2,(NOT(com1_used) OR (negUy_1=NAN) OR (Ux_1=NAN)),0,1,2)
+  FieldNames("1_dup:, 1_rsltAvgWS:, 1_rsltAvgWD:, 1_csiStdevWD")
+  StdDev(1,instWS_1,FP2,(NOT(com1_used) OR (instWS_1=NAN)))
+  WindVector(1,negUy_2,Ux_2,FP2,(NOT(com2_used) OR (negUy_2=NAN) OR (Ux_2=NAN)),0,1,0)
+  FieldNames("2_avgWS:, 2_unitAvgWD:, 2_epaStdevWD")
+  WindVector(1,negUy_2,Ux_2,FP2,(NOT(com2_used) OR (negUy_2=NAN) OR (Ux_2=NAN)),0,1,2)
+  FieldNames("2_dup:, 2_rsltAvgWS:, 2_rsltAvgWD:, 2_csiStdevWD")
+  StdDev(1,instWS_2,FP2,(NOT(com2_used) OR (instWS_2=NAN)))
+  WindVector(1,negUy_3,Ux_3,FP2,(NOT(com3_used) OR (negUy_3=NAN) OR (Ux_3=NAN)),0,1,0)
+  FieldNames("3_avgWS:, 3_unitAvgWD:, 3_epaStdevWD")
+  WindVector(1,negUy_3,Ux_3,FP2,(NOT(com3_used) OR (negUy_3=NAN) OR (Ux_3=NAN)),0,1,2)
+  FieldNames("3_dup:, 3_rsltAvgWS:, 3_rsltAvgWD:, 3_csiStdevWD")
+  StdDev(1,instWS_3,FP2,(NOT(com3_used) OR (instWS_3=NAN)))
+'  WindVector(1,negUy_4,Ux_4,FP2,NOT(com4_used),0,1,0)
+'  FieldNames("4_avgWS:, 4_unitAvgWD:, 4_epaStdevWD")
+'  WindVector(1,negUy_4,Ux_4,FP2,NOT(com4_used),0,1,2)
+'  FieldNames("4_dup:, 4_rsltAvgWS:, 4_rsltAvgWD:, 4_csiStdevWD")
+'  StdDev(1,instWS_4,FP2,NOT(com4_used))
+EndTable
+
+DataTable(windVec_30min,save_data,1)
+  DataInterval(0,30,Min,1)
+  WindVector(1,negUy_1,Ux_1,FP2,NOT(com1_used) OR (negUy_1=NAN) OR (Ux_1=NAN)),0,1,0)
+  FieldNames("1_avgWS:, 1_unitAvgWD:, 1_epaStdevWD")
+  WindVector(1,negUy_1,Ux_1,FP2,NOT(com1_used) OR (negUy_1=NAN) OR (Ux_1=NAN)),0,1,2)
+  FieldNames("1_dup:, 1_rsltAvgWS:, 1_rsltAvgWD:, 1_csiStdevWD")
+  StdDev(1,instWS_1,FP2,(NOT(com1_used) OR (instWS_1=NAN)))
+  WindVector(1,negUy_2,Ux_2,FP2,(NOT(com2_used) OR (negUy_1=NAN) OR (Ux_1=NAN)),0,1,0)
+  FieldNames("2_avgWS:, 2_unitAvgWD:, 2_epaStdevWD")
+  WindVector(1,negUy_2,Ux_2,FP2,(NOT(com2_used) OR (negUy_1=NAN) OR (Ux_1=NAN)),0,1,2)
+  FieldNames("2_dup:, 2_rsltAvgWS:, 2_rsltAvgWD:, 2_csiStdevWD")
+  StdDev(1,instWS_2,FP2,(NOT(com2_used) OR (instWS_2=NAN)))
+  WindVector(1,negUy_3,Ux_3,FP2,(NOT(com3_used) OR (negUy_1=NAN) OR (Ux_1=NAN)),0,1,0)
+  FieldNames("3_avgWS:, 3_unitAvgWD:, 3_epaStdevWD")
+  WindVector(1,negUy_3,Ux_3,FP2,(NOT(com3_used) OR (negUy_1=NAN) OR (Ux_1=NAN)),0,1,2)
+  FieldNames("3_dup:, 3_rsltAvgWS:, 3_rsltAvgWD:, 3_csiStdevWD")
+  StdDev(1,instWS_3,FP2,(NOT(com3_used) OR (instWS_3=NAN)))
+'  WindVector(1,negUy_4,Ux_4,FP2,NOT(com4_used),0,1,0)
+'  FieldNames("4_avgWS:, 4_unitAvgWD:, 4_epaStdevWD")
+'  WindVector(1,negUy_4,Ux_4,FP2,NOT(com4_used),0,1,2)
+'  FieldNames("4_dup:, 4_rsltAvgWS:, 4_rsltAvgWD:, 4_csiStdevWD")
+'  StdDev(1,instWS_4,FP2,NOT(com4_used))
+EndTable
+
+
+'''''' Datalogger Menu ''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+DisplayMenu("WSU Wind Tower",-2)    'show menu upon startup; display system as submenu
+  MenuItem("Save data?",save_data)
+  MenuPick(Yes,No)
+  DisplayValue("Battery",Public.batt_V)
+  SubMenu("Watch 10hz data")
+    SubMenu("COM1")
+      DisplayValue("Ux",Public.Ux_1)
+      DisplayValue("Uy",Public.Uy_1)
+      DisplayValue("Uz",Public.Uz_1)
+      DisplayValue("Ts",Public.Ts_1)
+      DisplayValue("WS",Public.instWS_1)
+      DisplayValue("WD",Public.instWD_1)
+    EndSubMenu
+    SubMenu("COM2")
+      DisplayValue("Ux",Public.Ux_2)
+      DisplayValue("Uy",Public.Uy_2)
+      DisplayValue("Uz",Public.Uz_2)
+      DisplayValue("Ts",Public.Ts_2)
+      DisplayValue("WS",Public.instWS_2)
+      DisplayValue("WD",Public.instWD_2)
+    EndSubMenu
+    SubMenu("COM3")
+      DisplayValue("Ux",Public.Ux_3)
+      DisplayValue("Uy",Public.Uy_3)
+      DisplayValue("Uz",Public.Uz_3)
+      DisplayValue("Ts",Public.Ts_3)   
+      DisplayValue("WS",Public.instWS_3)
+      DisplayValue("WD",Public.instWD_3)
+    EndSubMenu
+'    SubMenu("COM4")
+'      DisplayValue("Ux",Public.Ux_4)
+'      DisplayValue("Uy",Public.Uy_4)
+'      DisplayValue("Uz",Public.Uz_4)
+'      DisplayValue("Ts",Public.Ts_4)
+'      DisplayValue("WS",Public.instWS_4)
+'      DisplayValue("WD",Public.instWD_4)
+'    EndSubMenu
+  EndSubMenu
+  SubMenu("Sonic COM setup")
+    MenuItem("On COM1?",com1_used)
+    MenuPick(Yes,No)
+    MenuItem("On COM2?",com2_used)
+    MenuPick(Yes,No)
+    MenuItem("On COM3?",com3_used)
+    MenuPick(Yes,No)
+    MenuItem("On COM4?",com4_used)
+    MenuPick(No)
+  EndSubMenu
+  SubMenu("Sonic orientation")
+    MenuItem("Azimuth 1",azimuth_1)
+    MenuItem("Azimuth 2",azimuth_2)
+    MenuItem("Azimuth 3",azimuth_3)
+'    MenuItem("Azimuth 4",azimuth_4)
+    MenuItem("Declination",declination)
+  EndSubMenu
+EndMenu
+
+'''''' SUBROUTINES ''''''''''''''''''''''''''''''''''''''''''''''''''''
+Sub setDefaults
+  save_data = DEF_save_data
+  com1_used = DEF_com1_used
+  com2_used = DEF_com2_used
+  com3_used = DEF_com3_used
+  com4_used = DEF_com4_used
+  azimuth_1 = DEF_azimuth_1
+  azimuth_2 = DEF_azimuth_2
+  azimuth_3 = DEF_azimuth_3
+  azimuth_4 = DEF_azimuth_4
+  declination = DEF_declination
+  initialized = True
+EndSub
+
+Sub resetVars
+  Ux_1 = NAN
+  Uy_1 = NAN
+  Uz_1 = NAN
+  Ts_1 = NAN
+  Ux_2 = NAN
+  Uy_2 = NAN
+  Uz_2 = NAN
+  Ts_2 = NAN
+  Ux_3 = NAN
+  Uy_3 = NAN
+  Uz_3 = NAN
+  Ts_3 = NAN
+  Ux_4 = NAN
+  Uy_4 = NAN
+  Uz_4 = NAN
+  Ts_4 = NAN
+  instWS_1 = NAN
+  instWS_2 = NAN
+  instWS_3 = NAN
+  instWS_4 = NAN
+  instWD_1 = NAN
+  instWD_1 = NAN
+  instWD_3 = NAN
+  instWD_4 = NAN
+  negUy_1 = NAN
+  negUy_2 = NAN
+  negUy_3 = NAN
+  negUy_4 = NAN
+'  Move(sonic_1(1),4,NaN,1)    'IDK if Move() can be trusted to affect all four
+'  Move(sonic_2(1),4,NaN,1)    'modified program to use brute force
+'  Move(sonic_3(1),4,NaN,1)
+'  Move(sonic_4(1),4,NaN,1)
+'  Move(instWS(1),4,NaN,1)
+'  Move(instWD(1),4,NaN,1)
+'  Move(negUy(1),4,NaN,1)
+EndSub
+
+'''''' PROGRAM '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+PreserveVariables
+BeginProg
+  If (NOT initialized)    'if not initialized yet
+    Call setDefaults        'place call to set vars to defaults
+  EndIf
+  
+  'Attempt to open all serial ports
+  ' Baud=9600; 10=even/7bits/1stop; 0ms Tx delay; 40byte buffer
+  SerialOpen(Com1,9600,10,0,40)
+  SerialOpen(Com2,9600,10,0,40)
+  SerialOpen(Com3,9600,10,0,40)
+  'SerialOpen(Com4,9600,10,0,40)
+  
+	Scan (100,mSec,3,0)   'start scans @ 10Hz, 3-scan buffer, loop forever
+	  Call resetVars        'empty out data variables
+	  RealTime(rTime)       'retrieve time this scan
+    If ( (rMinute=29 OR rMinute=59) AND rSecond=59 AND rMicroSec=900000 )  ' prior to each new half hour
+      FileMark(wsuWind_10hz)        ' store next record in new file
+    EndIf
+    
+    PanelTemp(panel_temp_C,250)      ' measure datalogger temperature
+    'If ( panel_temp_C >= 30 )       ' if data logger temp exceeds 30 deg C / 85 deg F
+      'SW12(2,-1)                        ' turn on fan: set SW12 power #2 high (-1)
+    'EndIf
+    
+    Battery(batt_V)                  ' measure input voltage
+
+		'Get serial data from ATI-Sx sonic
+    'SerialInRecord (COMPort,Dest,SyncChar,NumBytes,EndWord,NumberBytesReturned,Option)
+		'		   ComPort:  Datalogger communications port
+		'			 Dest:  Destination variable
+		'		   SyncChar:  Synchronization character at the beginning of the record
+		'		   NumBytes:  Fixed number of bytes in the record, if the number of bytes varies, use the SyncChar and EndWord to define the record
+		'		   EndWord:  Record termination word
+		'      NumberbytesReturned:  Variable to hold the number of bytes in the record
+		'		   Options:  00 most recent record, do not store NAN if no record
+		'				         01 most recent record, store NAN if no record
+    '				         10 oldest record, do not store NAN if no record
+		'				         11 oldest record, store NAN if no record
+		
+		' SONIC COM PORT 1
+ 		SerialInRecord (Com1,son1_in_str,0,20,&H0D0A,bytes_back_1,00)  'get serial data
+    If (com1_used)                                    'if sonic is attached
+  		MoveBytes (son1_in_parts(1),0,son1_in_str,0,5)    'parse individual values from data string
+  		MoveBytes (son1_in_parts(2),0,son1_in_str,5,5)
+  		MoveBytes (son1_in_parts(3),0,son1_in_str,10,5)
+  		MoveBytes (son1_in_parts(4),0,son1_in_str,15,5)
+  		For j = 1 To 4                  'for each data byte
+  			sonic_1(j) = son1_in_parts(j)	  'Convert from a string to float
+  			sonic_1(j) = sonic_1(j)/100	    'Scale the ATI data.
+  		Next j	
+  		'calc horizontal WD, correct for sonic orientation, mag declination & adjust 0-360
+   		instWD_1 = (ATN2(-1*Ux_1,-1*Uy_1)*DperR + azimuth_1 + declination + 360) MOD 360
+		  instWS_1 = SQR(Ux_1^2+Uy_1^2)                                     'calc WS
+		  negUy_1 = -1*Uy_1                                                 'calc east component (-Uy)
+  	EndIf
+  	'SerialFlush(Com1)
+		
+		' SONIC COM PORT 2
+ 		SerialInRecord (Com2,son2_in_str,0,20,&H0D0A,bytes_back_2,00)  'get serial data
+		If (com2_used)                                    'if sonic attached
+  		MoveBytes (son2_in_parts(1),0,son2_in_str,0,5)    'parse individual values from data string
+  		MoveBytes (son2_in_parts(2),0,son2_in_str,5,5)
+  		MoveBytes (son2_in_parts(3),0,son2_in_str,10,5)
+  		MoveBytes (son2_in_parts(4),0,son2_in_str,15,5)
+  		For j = 1 To 4                  'for each data byte
+  			sonic_2(j) = son2_in_parts(j)	  'Convert from a string to float
+  			sonic_2(j) = sonic_2(j)/100	    'Scale the ATI data.
+  		Next j	
+  		'calc horizontal WD, correct for sonic orientation, mag declination & adjust 0-360
+  		instWD_2 = (ATN2(-1*Ux_2,-1*Uy_2)*DperR + azimuth_2 + declination + 360 ) MOD 360
+		  instWS_2 = SQR(Ux_2^2+Uy_2^2)                                     'calc WS
+		  negUy_2 = -1*Uy_2                                                 'calc east component (-Uy)
+    EndIf	
+    'SerialFlush(Com2)
+
+    ' SONIC COM PORT 3
+ 		SerialInRecord (Com3,son3_in_str,0,20,&H0D0A,bytes_back_3,01)  'get serial data
+    If (com3_used)                                    'if sonic attached
+  		MoveBytes (son3_in_parts(1),0,son3_in_str,0,5)    'parse individual values from data string
+  		MoveBytes (son3_in_parts(2),0,son3_in_str,5,5)
+  		MoveBytes (son3_in_parts(3),0,son3_in_str,10,5)
+  		MoveBytes (son3_in_parts(4),0,son3_in_str,15,5)
+  		For j = 1 To 4                  'for each data byte
+  			sonic_3(j) = son3_in_parts(j)	  'Convert from a string to float
+  			sonic_3(j) = sonic_3(j)/100	    'Scale the ATI data.
+  		Next j
+  		'calc horizontal WD, correct for sonic orientation, mag declination & adjust 0-360
+  		instWD_3 = (ATN2(-1*Ux_3,-1*Uy_3)*DperR + azimuth_3 + declination + 360 ) MOD 360
+		  instWS_3 = SQR(Ux_3^2+Uy_3^2)                                     'calc WS
+		  negUy_3 = -1*Uy_3                                                 'calc east component (-Uy)
+    EndIf
+    'SerialFlush(Com3)
+	  
+	  ' SONIC COM PORT 4
+ 		'SerialInRecord (Com4,son4_in_str,0,20,&H0D0A,bytes_back_4,01)  'get serial data
+    If (com4_used)                                  'if sonic attached
+  		MoveBytes (son4_in_parts(1),0,son4_in_str,0,5)    'parse individual values from data string
+  		MoveBytes (son4_in_parts(2),0,son4_in_str,5,5)
+  		MoveBytes (son4_in_parts(3),0,son4_in_str,10,5)
+  		MoveBytes (son4_in_parts(4),0,son4_in_str,15,5)
+  		For j = 1 To 4                  'for each data byte
+  			sonic_4(j) = son4_in_parts(j)	  'Convert from a string to float
+  			sonic_4(j) = sonic_4(j)/100	    'Scale the ATI data.
+  		Next j
+  		'calc horizontal WD, correct for sonic orientation, mag declination & adjust 0-360
+  		instWD_4 = (ATN2(-1*Ux_4,-1*Uy_4)*DperR + azimuth_4 + declination + 360 ) MOD 360
+		  instWS_4 = SQR(Ux_4^2+Uy_4^2)                                     'calc WS
+		  negUy_4 = -1*Uy_4                                                 'calc east component (-Uy)
+  	EndIf
+  	'SerialFlush(Com4)
+  	
+    CallTable(wsuWind_10hz)  'save 10Hz data to final storage table
+    
+'		CallTable(windVec_5min)  'perform wind direction computations
+'		If( windVec_5min.Output(1,1) ) Then      'if record was output
+'		  Move(avgWind(1),24,NaN,1)                'clear array
+'		  GetRecord(avgWind(1),windVec_5min,1)     'retrieve results into avgWind array
+'		  'for each attached sonic, convert from sonic coordinate system to meteorological coords
+'		  If(com1_used)
+'		    WDunitAvg_1 = (WDunitAvg_1 + azimuth_1 + declination + 360) MOD 360
+'		    WDrsltAvg_1 = (WDrsltAvg_1 + azimuth_1 + declination + 360) MOD 360
+'		  Else
+'		    Move(avgWind(1),7,NaN,1)  'if Com1 not used, reset vars to NaN
+'		  EndIf
+'		  If(com2_used)
+'		    WDunitAvg_2 = (WDunitAvg_2 + azimuth_2 + declination + 360) MOD 360
+'		    WDrsltAvg_2 = (WDrsltAvg_2 + azimuth_2 + declination + 360) MOD 360
+'		  Else
+'		    Move(avgWind(8),7,NaN,1)  'if Com2 not used, fill vars with NaN
+'		  EndIf
+'		  If(com3_used)
+'		    WDunitAvg_3 = (WDunitAvg_3 + azimuth_3 + declination + 360) MOD 360
+'		    WDrsltAvg_3 = (WDrsltAvg_3 + azimuth_3 + declination + 360) MOD 360
+'		  Else
+'		    Move(avgWind(15),7,NaN,1)  'if Com3 not used, fill with NaN
+'		  EndIf
+'		  'If(com4_used)
+'		  '  WDunitAvg_4 = (WDunitAvg_4 + azimuth_4 + declination + 360) MOD 360
+'		  '  WDrsltAvg_4 = (WDrsltAvg_4 + azimuth_4 + declination + 360) MOD 360
+'		  'Else
+'		  '  Move(avgWind(22),7,NaN,1)   'if Com4 not used, fill with NaN
+'		  'EndIf
+'    EndIf
+'    CallTable(wsuWind_5min)  'save WS & adjusted WD to final storage table
+    
+'		CallTable(windVec_30min)  'perform wind direction computations
+'		If( windVec_30min.Output(1,1) ) Then      'if record was output
+'		  Move(avgWind(1),24,NaN,1)                 'clear array again
+'		  GetRecord(avgWind(1),windVec_30min,1)     'retrieve results into avgWind array
+'		  'for each attached sonic, convert from sonic coordinate system to meteorological coords
+'		  If(com1_used)
+'		    WDunitAvg_1 = (WDunitAvg_1 + azimuth_1 + declination + 360) MOD 360
+'		    WDrsltAvg_1 = (WDrsltAvg_1 + azimuth_1 + declination + 360) MOD 360
+'		  Else
+'		    Move(avgWind(1),7,NaN,1)  'if com1 not used, fill vars with NaN
+'		  EndIf
+'		  If(com2_used)
+'		    WDunitAvg_2 = (WDunitAvg_2 + azimuth_2 + declination + 360) MOD 360
+'		    WDrsltAvg_2 = (WDrsltAvg_2 + azimuth_2 + declination + 360) MOD 360
+'		  Else
+'		    Move(avgWind(8),7,NaN,1)  'if com2 not used, fill with NaN
+'		  EndIf
+'		  If(com3_used)
+'		    WDunitAvg_3 = (WDunitAvg_3 + azimuth_3 + declination + 360) MOD 360
+'		    WDrsltAvg_3 = (WDrsltAvg_3 + azimuth_3 + declination + 360) MOD 360
+'		  Else
+'		    Move(avgWind(15),7,NaN,1)  'if com3 not used, fill with NaN
+'		  EndIf
+'		  'If(com4_used)
+'		  '  WDunitAvg_4 = (WDunitAvg_4 + azimuth_4 + declination + 360) MOD 360
+'		  '  WDrsltAvg_4 = (WDrsltAvg_4 + azimuth_4 + declination + 360) MOD 360
+'		  'Else
+'		  '  Move(avgWind(22),7,NaN,1)  'if com4 not used, fill with NaN
+'		  'EndIf
+'		EndIf    
+'    CallTable(wsuWind_30min)
+    
+	NextScan
+EndProg
