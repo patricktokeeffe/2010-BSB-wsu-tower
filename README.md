@@ -8,15 +8,15 @@ This CRBasic program was used to record high-frequency sonic anemometer data
 during a complex terrain wind study on Big Southern Butte, ID in 2010. 
 Post-processing was headed by the [Missoula Firelab](http://www.firelab.org):
 
-> Missoula Fire Sciences Laboratory
-> Rocky Mountain Research Station
-> United States Forest Service
+> Missoula Fire Sciences Laboratory  
+> Rocky Mountain Research Station  
+> United States Forest Service  
 >
 > Primary contact: Bret Butler <bwbutler@fs.fed.us>
 
 ### Links
 
-* Repository: <https://www.bitbucket.org/wsular/2010-BSB-tower-program.git>
+* Repository: <https://www.bitbucket.org/wsular/2010-bsb-tower-program>
 * Tower data files: <ftp://lar-d216-share.cee.wsu.edu/proj/2010_BSB/tower_data>
   [port 1021 off WSU campus]
   
