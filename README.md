@@ -14,13 +14,24 @@ Post-processing was headed by the [Missoula Firelab](http://www.firelab.org):
 >
 > Primary contact: Bret Butler <bwbutler@fs.fed.us>
 
+The [Air Resources Laboratory - Field Research Division](http://www.noaa.inel.gov/)
+(within NOAA) was also a collaborator on this study. Their designated contact 
+person is:
+
+> Dennis Finn  
+> 1750 Foote Dr.  
+> Idaho Falls, ID 83402  
+> <Dennis.Finn@noaa.gov>
+
 ### Links
 
 * Repository: <https://www.bitbucket.org/wsular/2010-bsb-tower-program>
 * Tower data files: <ftp://lar-d216-share.cee.wsu.edu/proj/2010_BSB/tower_data>
   [port 1021 off WSU campus]
+* NOAA's Air Resources Lab [project summary page](http://www.noaa.inel.gov/projects/bigsouthern/big.htm)
   
 ### Publications 
+
 Collected data was integrated into the base set used for 
 [this paper](http://www.atmos-chem-phys-discuss.net/14/16821/2014/)
 (under review as of Aug 2014):
