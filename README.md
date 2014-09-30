@@ -25,9 +25,12 @@ person is:
 
 ### Links
 
-* Repository: <https://www.bitbucket.org/wsular/2010-bsb-tower-program>
-* Tower data files: <ftp://lar-d216-share.cee.wsu.edu/proj/2010_BSB/tower_data>
+* This repository: <https://www.bitbucket.org/wsular/2010-bsb-tower-program>
+* Logbook (WSU): <ftp://lar-d216-share.cee.wsu.edu/proj/2010_BSB/BSB_WSU_logbook.pdf>
   [port 1021 off WSU campus]
+* Data files [port 1021 off WSU campus]:
+    * Tower: <ftp://lar-d216-share.cee.wsu.edu/proj/2010_BSB/tower_data>
+    * Sodar: <ftp://lar-d216-share.cee.wsu.edu/proj/2010_BSB/sodar_workspaces>
 * NOAA's Air Resources Lab [project summary page](http://www.noaa.inel.gov/projects/bigsouthern/big.htm)
   
 ### Publications 
