@@ -4,6 +4,9 @@ Wind Tower Data Acquisition Program
 Wind Measurements on Big Southern Butte (2010)
 ----------------------------------------------
 
+> **Rebase notice:** This repository was just rebased over the root commit to
+> remove a door for web bots into the semi-public FTP server.
+
 This CRBasic program was used to record high-frequency sonic anemometer data 
 during a complex terrain wind study on Big Southern Butte, ID in 2010. 
 Post-processing was headed by the [Missoula Firelab](http://www.firelab.org):
